@@ -4,10 +4,7 @@
 
 
 module.exports = Object.freeze({
-    //secrets manager region
     secrets_mgr_region: 'us-west-2',
-
-    //secret name for 
     secrets_mgr_secret_name: 'americas-ca-api-access-token',
     secrets_mgr_asp_access_token_key: 'api-access-token',
     asp_api_endpoint: 'https://api.amazonalexa.com/',
