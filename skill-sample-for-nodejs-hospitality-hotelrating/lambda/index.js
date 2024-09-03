@@ -7,50 +7,15 @@
 const Alexa = require('ask-sdk-core');
 const aplUtil = require("./apl.js");
 
+const interceptors = require('./interceptors/interceptors_req.js')
+const util = require('./util/util.js')
+
 // For AWS Pinpoint
-const sms = require('./sms.js');
+const sms = require('./aws/sms.js');
 const staffSMSNumber = 'INSERT A VALID MOBILE NUMBER YOU WANT TO SEND SMS MESSAGE TO';     
 
-// i18n library dependency, we use it below in a localization interceptor
-const i18n = require('i18next');
-const sprintf = require('i18next-sprintf-postprocessor');
-
-// i18n strings for all supported locales
-const languageStrings = {
-    'en-US': require('./languages/en-US.js')
-};
-
-/**
- * This request interceptor will bind a translation function 't' to the handlerInput
-*/
-const LocalizationInterceptor = {
-    process(handlerInput) {
-        const localizationClient = i18n.use(sprintf).init({
-            lng: Alexa.getLocale(handlerInput.requestEnvelope),
-            resources: languageStrings,
-        });
-        localizationClient.localize = function localize() {
-            const args = arguments;
-            const values = [];
-            for (let i = 1; i < args.length; i += 1) {
-                values.push(args[i]);
-            }
-            const value = i18n.t(args[0], {
-                returnObjects: true,
-                postProcess: 'sprintf',
-                sprintf: values,
-            });
-            if (Array.isArray(value)) {
-                return value[Math.floor(Math.random() * value.length)];
-            }
-            return value;
-        };
-        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-        requestAttributes.t = function translate(...args) {
-            return localizationClient.localize(...args);
-        };
-    },
-};
+// For AWS SNS
+const sns = require('./aws/sns.js')
 
 /**
  * The launch request handler handles both the skill cold launch as well as the skill connection
@@ -83,7 +48,7 @@ const LaunchRequestHandler = {
             }    
         }
 
-        const payload = require('./data/ratingdata.json');
+        const payload = require('./data_ca/ratingdata.json');
         if (Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)['Alexa.Presentation.APL']) {
             let document = require('./apl/rating.json');          
             const aplDirective = aplUtil.createDirectivePayload(document, payload);
@@ -131,12 +96,18 @@ function getSpeechOutputByRating(inputRating, handlerInput) {
 
     if(rating <= 3){
         speakOutput = requestAttributes.t('NEGATIVE_PROMPT');
-        txtOuptut = requestAttributes.t('STAFF_TEXT_MESSAGE').replace('@RATING@', rating);
+        txtOuptut = requestAttributes.t('STAFF_TEXT_MESSAGE').replace('@RATING@', rating).replace('@UNITNAME@', util.getSessionAttribute(handlerInput, 'unit_name'));
+
         handlerInput.responseBuilder.addDirective(
             aplUtil.getSadRatingAPLDirectiveBasic()
         );
-        // text number should be changed so that it is a valid mobile number that can receive SMS texts        
+        // text number should be changed so that it is a valid mobile number that can receive SMS texts
+        // Comment out the following if you do not want to use sms service
         sms.SendSMSMessage(txtOuptut, staffSMSNumber);
+
+        //send the bad rating review message to SNS
+        sns.publish_message_sns(txtOuptut)
+
     } else if (rating >= 4) {
         speakOutput = requestAttributes.t('POSITIVE_PROMPT');        
         responseBuilder.addDirective(aplUtil.getHappyRatingAPLDirectiveBasic());
@@ -279,35 +250,6 @@ const ErrorHandler = {
         }
     };
 
-/**
- * RequestInterceptor logs the incoming request, used for debugging
-*/
-const RequestInterceptor = {
-        process(handlerInput) {
-            let { attributesManager, requestEnvelope } = handlerInput;
-            let sessionAttributes = attributesManager.getSessionAttributes();
-
-            console.log(`==Request==${JSON.stringify(requestEnvelope)}`);
-            console.log(`==SessionAttributes==${JSON.stringify(sessionAttributes, null, 2)}`);
-        }
-    };
-
-/**
- * ResponseInterceptor logs the outgoing response, used for debugging
-*/   
-    const ResponseInterceptor = {
-        process(handlerInput) {
-
-            let { attributesManager, responseBuilder } = handlerInput;
-            let response = responseBuilder.getResponse();
-            let sessionAttributes = attributesManager.getSessionAttributes();
-
-            // Log the response for debugging purposes.
-            console.log(`==Response==${JSON.stringify(response)}`);
-            console.log(`==SessionAttributes==${JSON.stringify(sessionAttributes, null, 2)}`);
-        }
-    };
-
 
 /**
  * This handler acts as the entry point for your skill, routing all request and response
@@ -323,7 +265,7 @@ exports.handler = Alexa.SkillBuilders.custom()
         CancelAndStopIntentHandler,
         FallbackIntentHandler,
         SessionEndedRequestHandler)
-    .addRequestInterceptors(LocalizationInterceptor, RequestInterceptor)
-    .addResponseInterceptors(ResponseInterceptor)
+    .addRequestInterceptors(interceptors.LocalizationInterceptor, interceptors.RequestInterceptor, interceptors.aspUnitInfoInterceptor)
+    .addResponseInterceptors(interceptors.ResponseInterceptor)
     .addErrorHandlers(ErrorHandler)
     .lambda();
