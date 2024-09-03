@@ -4,9 +4,18 @@
 
 
 module.exports = Object.freeze({
-    secrets_mgr_region: 'us-west-2',
-    secrets_mgr_secret_name: 'americas-ca-api-access-token',
-    secrets_mgr_asp_access_token_key: 'api-access-token',
-    asp_api_endpoint: 'https://api.amazonalexa.com/',
-    sns_topic_arn: 'arn:aws:sns:us-west-2:984667355978:StayBadRating'
+    //secrets manager region
+    secrets_mgr_region: '',
+
+    //secret name where you save your 3p API access token
+    secrets_mgr_secret_name: '',
+
+    //3p API access token key name
+    secrets_mgr_asp_access_token_key: '',
+
+    //ASP API call endpoint
+    asp_api_endpoint: '',
+
+    //SNS topics ARN where you will publish the message to
+    sns_topic_arn: ''
 });
