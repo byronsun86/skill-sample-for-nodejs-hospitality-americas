@@ -101,9 +101,6 @@ function getSpeechOutputByRating(inputRating, handlerInput) {
         handlerInput.responseBuilder.addDirective(
             aplUtil.getSadRatingAPLDirectiveBasic()
         );
-        // text number should be changed so that it is a valid mobile number that can receive SMS texts
-        // Comment out the following if you do not want to use sms service
-        sms.SendSMSMessage(txtOuptut, staffSMSNumber);
 
         //send the bad rating review message to SNS
         sns.publish_message_sns(txtOuptut)

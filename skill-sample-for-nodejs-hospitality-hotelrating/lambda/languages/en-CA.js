@@ -1,6 +1,7 @@
 // Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
 // Licensed under the Amazon Software License  http://aws.amazon.com/asl/
+'use strict';
 
 module.exports = {
     translation: {
@@ -12,6 +13,6 @@ module.exports = {
         POSITIVE_PROMPT: 'Thank you for the rating,  we are glad you are enjoying your stay!',
         STAFF_TEXT_MESSAGE: 'Hotel guest in room @UNITNAME@ just gave a stay feedback of @RATING@ out of 5, please follow up with the guest to see if there is anything we can help him with.',
         THANKYOU_PROMPT: 'Thank you for the rating!',
-        WELCOME_PROMPT: 'Welcome to Demo Hotel Vancouver! How is your stay going? Please provide a rating between 1 and 5.'
+        WELCOME_PROMPT: 'Welcome to Maveri Vancouver! How is your stay going? Please provide a rating between 1 and 5.'
     }
 }

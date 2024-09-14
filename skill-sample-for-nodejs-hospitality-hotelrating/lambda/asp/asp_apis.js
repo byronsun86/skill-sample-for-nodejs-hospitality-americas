@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
 // Licensed under the Amazon Software License  http://aws.amazon.com/asl/
 
+'use strict';
+
 const axios = require('axios')
 const asp_api_token = require('./access_token.js');
 const config = require('../util/config.js')

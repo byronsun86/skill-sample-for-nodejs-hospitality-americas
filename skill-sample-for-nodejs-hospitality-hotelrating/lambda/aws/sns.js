@@ -1,10 +1,16 @@
+// Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+// Licensed under the Amazon Software License  http://aws.amazon.com/asl/
+
+'use strict';
+
 const { SNSClient, PublishCommand } = require("@aws-sdk/client-sns");
 const config = require('../util/config');
 
 module.exports = {
 
     /**
-     * 
+     * Send a message to the SNS topic
      * @param {*} msg 
      */
     async publish_message_sns(msg) {

@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
 // Licensed under the Amazon Software License  http://aws.amazon.com/asl/
 
+'use strict';
+
 const AWS = require('aws-sdk');
 const config = require('./config');
 

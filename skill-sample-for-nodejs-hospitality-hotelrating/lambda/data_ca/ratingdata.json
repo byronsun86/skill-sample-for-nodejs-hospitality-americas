@@ -1,8 +1,8 @@
 {
     "data": {
         "rating": 0,
-        "backgroundURL": "https://dv9e1z7u51h9c.cloudfront.net/demo/MainMenubackground.png",
-        "logoURL": "https://dv9e1z7u51h9c.cloudfront.net/demo/logo.png",
+        "backgroundURL": "https://d169t4j5aqp8az.cloudfront.net/MainMenuBackground.png",
+        "logoURL": "https://d169t4j5aqp8az.cloudfront.net/HotelLogo_White_CA.png",
         "ratingQuestion": "How would you rate your experience at this hotel?",
         "oneStarRatingText": "Very unsatisfied",
         "fiveStarRatingText": "Very satisfied",
